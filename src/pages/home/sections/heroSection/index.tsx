@@ -35,7 +35,10 @@ const HeroSection = () => {
               <Search className="text-surface-400" />
             </InputGroupAddon>
           </InputGroup>
-          <Button variant="secondary" size="xl" className="text-base">
+          <Button
+            size="xl"
+            className="bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-xl transition-all active:scale-95 shadow-lg text-base"
+          >
             Search
           </Button>
         </form>

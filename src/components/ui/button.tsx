@@ -11,9 +11,9 @@ const buttonVariants = cva(
         default:
           "bg-brand-600 hover:bg-brand-700 rounded-xl shadow-sm hover:shadow transition-all text-white",
         outline:
-          "bg-white rounded-xl border border-surface-200 hover:border-brand-300 hover:bg-brand-50 transition-all text-surface-800 shadow-sm hover:shadow",
+          "border border-white/30 text-white rounded-xl hover:bg-white/10 transition-all",
         secondary:
-          "bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-xl transition-all active:scale-95 shadow-lg",
+          "bg-white rounded-xl border border-surface-200 hover:border-brand-300 hover:bg-brand-50 transition-all text-surface-800 shadow-sm hover:shadow",
         ghost: "text-brand-600 hover:text-brand-700 transition-all",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",

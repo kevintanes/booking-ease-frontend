@@ -16,7 +16,7 @@ const ServicesSection = () => {
         {CATEGORIES.map(({ emoji, label }) => (
           <Button
             key={label}
-            variant="outline"
+            variant="secondary"
             size="xl"
             className="gap-2"
             render={<Link to={`/services?category=${label}`} />}
@@ -41,6 +41,12 @@ const ServicesSection = () => {
         <Button render={<Link to="/services" />} variant="ghost">
           View all <ArrowRight />
         </Button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 bg-accent-400 place-items-center mt-8">
+        <h1>disini nanti card</h1>
+        <h1>disini nanti card</h1>
+        <h1>disini nanti card</h1>
+        <h1>disini nanti card</h1>
       </div>
     </div>
   );
