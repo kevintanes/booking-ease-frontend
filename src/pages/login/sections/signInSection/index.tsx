@@ -1,21 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  registerSchema,
-  type RegisterFormValues,
-} from "@/lib/validations/auth";
-import {
-  CalendarDays,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  Phone,
-  User,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
   Field,
   FieldError,
   FieldGroup,
@@ -27,26 +11,29 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { type LoginFormValues, loginSchema } from "@/lib/validations/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarDays, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
-const CreateAccountSection = () => {
+const SignInSection = () => {
   const [showPass, setShowPass] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      phone: "",
     },
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
+  const onSubmit = (data: LoginFormValues) => {
     console.log(data);
   };
 
@@ -63,16 +50,17 @@ const CreateAccountSection = () => {
             </span>
           </Link>
           <h2 className="text-2xl font-bold text-surface-900 mb-1">
-            Create your account
+            Sign in to your account
           </h2>
           <p className="text-surface-800 text-sm">
-            Already have an account?
+            Don't have an account?{" "}
             <Button
+              className="px-0"
               variant="link"
-              render={<Link to={"/login"} />}
               nativeButton={false}
+              render={<Link to={"/register"} />}
             >
-              Sign in
+              Create one free
             </Button>
           </p>
         </div>
@@ -113,35 +101,6 @@ const CreateAccountSection = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup className="gap-4">
             <Controller
-              name="name"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor="name"
-                    className="text-sm font-medium text-surface-800"
-                  >
-                    Full name
-                  </FieldLabel>
-                  <InputGroup>
-                    <InputGroupAddon>
-                      <User className="text-surface-400 size-4" />
-                    </InputGroupAddon>
-                    <InputGroupInput
-                      {...field}
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      aria-invalid={fieldState.invalid}
-                    />
-                  </InputGroup>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
               name="email"
               control={control}
               render={({ field, fieldState }) => (
@@ -170,35 +129,7 @@ const CreateAccountSection = () => {
                 </Field>
               )}
             />
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor="phone"
-                    className="text-sm font-medium text-surface-800"
-                  >
-                    Phone (optional)
-                  </FieldLabel>
-                  <InputGroup>
-                    <InputGroupAddon>
-                      <Phone className="text-surface-400 size-4" />
-                    </InputGroupAddon>
-                    <InputGroupInput
-                      {...field}
-                      id="phone"
-                      type="tel"
-                      placeholder="+62 812 3456 7890"
-                      aria-invalid={fieldState.invalid}
-                    />
-                  </InputGroup>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+
             <Controller
               name="password"
               control={control}
@@ -218,7 +149,7 @@ const CreateAccountSection = () => {
                       {...field}
                       id="password"
                       type={showPass ? "text" : "password"}
-                      placeholder="Min. 6 characters"
+                      placeholder="******"
                       aria-invalid={fieldState.invalid}
                     />
                     <InputGroupAddon align="inline-end">
@@ -247,33 +178,12 @@ const CreateAccountSection = () => {
             size="xl"
             className="w-full mt-4 font-semibold text-base"
           >
-            Create Account
+            Sign In
           </Button>
         </form>
-
-        <p className="text-center text-xs text-surface-800 mt-6">
-          By signing up, you agree to our{" "}
-          <Button
-            variant="link"
-            render={<Link to={"/terms-of-service"} />}
-            nativeButton={false}
-            className="text-xs px-0"
-          >
-            Terms of Service
-          </Button>{" "}
-          and{" "}
-          <Button
-            variant="link"
-            render={<Link to={"/privacy-policy"} />}
-            nativeButton={false}
-            className="text-xs px-0"
-          >
-            Privacy Policy
-          </Button>
-        </p>
       </div>
     </section>
   );
 };
 
-export default CreateAccountSection;
+export default SignInSection;
