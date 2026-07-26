@@ -19,13 +19,19 @@ const ServicesSection = () => {
             variant="secondary"
             size="xl"
             className="gap-2"
+            nativeButton={false}
             render={<Link to={`/services?category=${label}`} />}
           >
             <span className="text-lg">{emoji}</span>
             {label}
           </Button>
         ))}
-        <Button render={<Link to="/services" />} size="xl" className="gap-2">
+        <Button
+          render={<Link to="/services" />}
+          nativeButton={false}
+          size="xl"
+          className="gap-2"
+        >
           All Services <ArrowRight size={14} />
         </Button>
       </div>
@@ -38,7 +44,11 @@ const ServicesSection = () => {
             Handpicked top-rated services
           </p>
         </div>
-        <Button render={<Link to="/services" />} variant="ghost">
+        <Button
+          render={<Link to="/services" />}
+          variant="ghost"
+          nativeButton={false}
+        >
           View all <ArrowRight />
         </Button>
       </div>
