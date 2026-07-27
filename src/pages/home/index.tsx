@@ -1,9 +1,9 @@
+import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import BookSection from "./sections/bookSection";
 import HeroSection from "./sections/heroSection";
 import ServicesSection from "./sections/servicesSection";
 import WhySection from "./sections/whySection";
-import BookSection from "./sections/bookSection";
-import Footer from "@/components/Footer";
 
 const HomePage = () => {
   return (
