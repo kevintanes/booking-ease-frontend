@@ -1,9 +1,10 @@
 import { CalendarDays } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
-  const isActive = (path) => location.pathname === path;
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-100 shadow-sm">
@@ -36,6 +37,7 @@ const Navbar = () => {
               size="lg"
               variant="secondary"
               render={<Link to={"/login"} />}
+              nativeButton={false}
             >
               Sign in
             </Button>
@@ -43,6 +45,7 @@ const Navbar = () => {
               size="lg"
               className="font-semibold px-4"
               render={<Link to={"/register"} />}
+              nativeButton={false}
             >
               Get started
             </Button>

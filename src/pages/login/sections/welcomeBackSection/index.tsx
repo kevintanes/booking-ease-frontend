@@ -21,7 +21,7 @@ const WelcomeBackSection = () => {
 
         <div className="space-y-4">
           <h2 className="text-4xl font-bold leading-tight">
-            BookEase Welcome back to BookEase
+            Welcome back to BookEase
           </h2>
           <p className="text-brand-200 text-lg leading-relaxed">
             Book premium services with just a few clicks. Real-time
