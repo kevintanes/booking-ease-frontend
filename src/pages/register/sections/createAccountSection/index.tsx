@@ -1,21 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  registerSchema,
-  type RegisterFormValues,
-} from "@/lib/validations/auth";
-import {
-  CalendarDays,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  Phone,
-  User,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
   Field,
   FieldError,
   FieldGroup,
@@ -27,10 +11,28 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useAuth } from "@/context/authContext";
+import {
+  registerSchema,
+  type RegisterFormValues,
+} from "@/lib/validations/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CalendarDays,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 const CreateAccountSection = () => {
   const [showPass, setShowPass] = useState(false);
+  const { register } = useAuth();
 
   const {
     control,
@@ -46,8 +48,12 @@ const CreateAccountSection = () => {
     },
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterFormValues) => {
+    try {
+      await register(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
