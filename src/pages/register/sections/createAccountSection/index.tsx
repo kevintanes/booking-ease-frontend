@@ -252,8 +252,9 @@ const CreateAccountSection = () => {
             type="submit"
             size="xl"
             className="w-full mt-4 font-semibold text-base"
+            disabled={isSubmitting}
           >
-            Create Account
+            {isSubmitting ? "Creating account" : "Create Account"}
           </Button>
         </form>
 

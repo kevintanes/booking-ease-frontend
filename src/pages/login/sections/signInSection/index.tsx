@@ -177,8 +177,9 @@ const SignInSection = () => {
             type="submit"
             size="xl"
             className="w-full mt-4 font-semibold text-base"
+            disabled={isSubmitting}
           >
-            Sign In
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
         </form>
       </div>
