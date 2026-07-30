@@ -35,8 +35,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
-
       toast.add({
         type: "error",
         description: getErrorMessage(
@@ -50,7 +48,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async ({ email, password }: LoginFormValues) => {
     try {
       const result = await loginUser({ email, password });
-      console.log({ result });
 
       if (result.success === true) {
         setUser(result.data.user);
