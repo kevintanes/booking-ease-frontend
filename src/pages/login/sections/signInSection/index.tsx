@@ -11,6 +11,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useAuth } from "@/context/authContext";
 import { type LoginFormValues, loginSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarDays, Eye, EyeOff, Lock, Mail } from "lucide-react";
@@ -20,6 +21,8 @@ import { Link } from "react-router-dom";
 
 const SignInSection = () => {
   const [showPass, setShowPass] = useState(false);
+
+  const { login } = useAuth();
 
   const {
     control,
@@ -33,8 +36,12 @@ const SignInSection = () => {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      await login(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
