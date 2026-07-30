@@ -1,10 +1,31 @@
-import { CalendarDays } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useAuth } from "@/context/authContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { useState } from "react";
 
 const Navbar = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
+
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-100 shadow-sm">
@@ -33,22 +54,77 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="hidden md:flex items-center gap-3 ">
-            <Button
-              size="lg"
-              variant="secondary"
-              render={<Link to={"/login"} />}
-              nativeButton={false}
-            >
-              Sign in
-            </Button>
-            <Button
-              size="lg"
-              className="font-semibold px-4"
-              render={<Link to={"/register"} />}
-              nativeButton={false}
-            >
-              Get started
-            </Button>
+            {isAuthenticated ? (
+              <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      className="hover:bg-surface-50 text-surface-900"
+                    />
+                  }
+                >
+                  {user?.name}
+                  <ChevronDown
+                    className={`size-3.5 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-52">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-surface-400">
+                      Signed in as
+                    </DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-sm font-semibold text-surface-800">
+                      {user?.email}
+                    </DropdownMenuLabel>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {user.role === "ADMIN" ? (
+                      <DropdownMenuItem>
+                        <Link to="/admin" className="flex gap-2 items-center">
+                          <Settings />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem>
+                        <Link
+                          to="/dashboard"
+                          className="flex gap-2 items-center"
+                        >
+                          <LayoutDashboard />
+                          My Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem variant="destructive">
+                      <LogOut />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  render={<Link to={"/login"} />}
+                  nativeButton={false}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  size="lg"
+                  className="font-semibold px-4"
+                  render={<Link to={"/register"} />}
+                  nativeButton={false}
+                >
+                  Get started
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
