@@ -69,9 +69,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const logout = () => {
+    setUser(undefined);
+    setToken("");
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
+
   return (
     <AuthContext.Provider
-      value={{ register, token, user, login, isAuthenticated }}
+      value={{ register, token, user, login, isAuthenticated, logout }}
     >
       {children}
     </AuthContext.Provider>

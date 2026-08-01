@@ -260,23 +260,19 @@ const CreateAccountSection = () => {
 
         <p className="text-center text-xs text-surface-800 mt-6">
           By signing up, you agree to our{" "}
-          <Button
-            variant="link"
-            render={<Link to={"/terms-of-service"} />}
-            nativeButton={false}
-            className="text-xs px-0"
+          <Link
+            to={"/terms-of-service"}
+            className="text-brand-600 hover:underline"
           >
             Terms of Service
-          </Button>{" "}
+          </Link>{" "}
           and{" "}
-          <Button
-            variant="link"
-            render={<Link to={"/privacy-policy"} />}
-            nativeButton={false}
-            className="text-xs px-0"
+          <Link
+            to={"/privacy-policy"}
+            className="text-brand-600 hover:underline"
           >
             Privacy Policy
-          </Button>
+          </Link>
         </p>
       </div>
     </section>
