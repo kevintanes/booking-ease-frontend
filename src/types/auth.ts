@@ -9,4 +9,6 @@ export interface AuthContextType {
   token: string;
   register: (user: RegisterFormValues) => Promise<void>;
   login: (data: LoginFormValues) => Promise<void>;
+  isAuthenticated: boolean;
+  logout: () => void;
 }
