@@ -144,6 +144,7 @@ const Navbar = () => {
             size="icon-lg"
             className="active:not-aria-[haspopup]:translate-y-0 text-surface-800 hover:bg-surface-50 md:hidden"
             onClick={() => setMobileOpen((prev) => !prev)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             {mobileOpen ? (
               <X className="size-5" />
