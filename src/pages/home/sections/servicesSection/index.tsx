@@ -1,4 +1,8 @@
+import ServiceCard from "@/components/ServiceCard";
 import { Button } from "@/components/ui/button";
+import { getAllService } from "@/services/serviceService";
+import type { Service } from "@/types/service";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -10,6 +14,13 @@ const CATEGORIES = [
 ];
 
 const ServicesSection = () => {
+  const { data } = useQuery({
+    queryKey: ["service-featured"],
+    queryFn: () => getAllService(),
+  });
+
+  const services = data?.data || [];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
       <div className="flex justify-center gap-3 flex-wrap">
@@ -52,11 +63,10 @@ const ServicesSection = () => {
           View all <ArrowRight />
         </Button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 bg-accent-400 place-items-center mt-8">
-        <h1>disini nanti card</h1>
-        <h1>disini nanti card</h1>
-        <h1>disini nanti card</h1>
-        <h1>disini nanti card</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5  place-items-center mt-8">
+        {services.map((service: Service) => (
+          <ServiceCard key={service.id} service={service} />
+        ))}
       </div>
     </div>
   );
