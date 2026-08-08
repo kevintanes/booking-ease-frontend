@@ -15,7 +15,11 @@ const SERVICE_IMAGES: Record<string, string> = {
     "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80",
 };
 
-const ServiceCard = ({ service }: { service: Service }) => {
+interface ServiceCardProps {
+  service: Service;
+}
+
+const ServiceCard = ({ service }: ServiceCardProps) => {
   const imgUrl =
     (service.category?.name && SERVICE_IMAGES[service.category?.name]) ||
     "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80";

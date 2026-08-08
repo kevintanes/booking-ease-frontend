@@ -14,12 +14,12 @@ const CATEGORIES = [
 ];
 
 const ServicesSection = () => {
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["service-featured"],
-    queryFn: () => getAllService(),
+    queryFn: () => getAllService({ limit: 4 }),
   });
 
-  const services = data?.data || [];
+  const services = data?.data?.services || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
@@ -63,6 +63,8 @@ const ServicesSection = () => {
           View all <ArrowRight />
         </Button>
       </div>
+      {isLoading && <p>Loading services...</p>}
+      {isError && <p>Failed to load services.</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5  place-items-center mt-8">
         {services.map((service: Service) => (
           <ServiceCard key={service.id} service={service} />
