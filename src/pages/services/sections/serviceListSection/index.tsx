@@ -22,7 +22,7 @@ const ServiceListSection = () => {
 
   const { data } = useQuery({
     queryKey: ["services", search, categoryId, page],
-    queryFn: () => getAllService({ search, categoryId, page, limit: 1 }),
+    queryFn: () => getAllService({ search, categoryId, page, limit: 8 }),
     placeholderData: keepPreviousData,
   });
 
