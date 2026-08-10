@@ -6,6 +6,6 @@ export const getAllService = async (params: {
   categoryId?: string;
   page?: number;
 }) => {
-  const result = await api.get(`/service/`, { params });
+  const result = await api.get(`/services/`, { params });
   return result.data;
 };

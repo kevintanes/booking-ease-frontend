@@ -3,6 +3,7 @@ import HomePage from "./pages/home";
 import RegisterPage from "./pages/register";
 import NotfoundPage from "./pages/not-found";
 import LoginPage from "./pages/login";
+import ServicesPage from "./pages/services";
 import Navbar from "./components/Navbar";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "./components/ui/toast";
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/services" element={<ServicesPage />} />
             <Route path="*" element={<NotfoundPage />} />
           </Routes>
         </AuthProvider>
