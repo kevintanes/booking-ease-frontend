@@ -3,26 +3,14 @@ import { ArrowRight, Clock, MapPin, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import type { Service } from "@/types/service";
-
-const SERVICE_IMAGES: Record<string, string> = {
-  Sports:
-    "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80",
-  Beauty:
-    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80",
-  Wellness:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80",
-  Fitness:
-    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80",
-};
+import { getServiceImage } from "@/lib/serviceImages";
 
 interface ServiceCardProps {
   service: Service;
 }
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
-  const imgUrl =
-    (service.category?.name && SERVICE_IMAGES[service.category?.name]) ||
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80";
+  const imgUrl = getServiceImage(service.category?.name);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-surface-100 group overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">

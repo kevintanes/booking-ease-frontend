@@ -1,7 +1,8 @@
 import Card from "@/components/Card";
 import { Button } from "@/components/ui/button";
-import { AuthContext } from "@/context/authContext";
+import { useAuth } from "@/context/authContext";
 import { formatCurrency } from "@/lib/formatCurrency";
+import { getServiceImage } from "@/lib/serviceImages";
 import { getServiceById } from "@/services/serviceService";
 import type { Service } from "@/types/service";
 import { useQuery } from "@tanstack/react-query";
@@ -15,44 +16,40 @@ import {
   Shield,
   Star,
 } from "lucide-react";
-import { useContext } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
-const SERVICE_IMAGES = {
-  Sports:
-    "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80",
-  Beauty:
-    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80",
-  Wellness:
-    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
-  Fitness:
-    "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80",
-};
 
 const HeroSection = () => {
   const { id } = useParams();
 
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated } = useAuth();
 
   const navigate = useNavigate();
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["service", id],
     queryFn: () => getServiceById(id),
+    enabled: Boolean(id),
   });
 
-  const service: Service = data?.data || null;
+  const service: Service | undefined = data?.data;
 
-  if (!service)
+  if (isLoading) {
+    return (
+      <div className="text-center py-32">
+        <p className="text-surface-800">Loading...</p>
+      </div>
+    );
+  }
+
+  if (isError || !service) {
     return (
       <div className="text-center py-32">
         <p className="text-surface-800">Service not found.</p>
       </div>
     );
+  }
 
-  const imgUrl =
-    SERVICE_IMAGES[service.category?.name] ||
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80";
+  const imgUrl = getServiceImage(service.category?.name);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -67,7 +64,7 @@ const HeroSection = () => {
 
       <div className="grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3 space-y-6">
-          <Card>
+          <Card className="overflow-hidden">
             <img
               src={imgUrl}
               alt={service.name}
