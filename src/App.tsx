@@ -8,11 +8,13 @@ import Navbar from "./components/Navbar";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "./components/ui/toast";
 import ServiceDetailPage from "./pages/service-detail";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <Toaster />
           <Navbar />

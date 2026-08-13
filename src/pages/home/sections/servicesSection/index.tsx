@@ -32,7 +32,7 @@ const ServicesSection = () => {
             size="xl"
             className="gap-2 border-surface-200 hover:border-brand-300 hover:bg-brand-50"
             nativeButton={false}
-            render={<Link to={`/services?category=${id}`} />}
+            render={<Link to={`/services?categoryId=${id}`} />}
           >
             <span className="text-lg">{icon}</span>
             {name}

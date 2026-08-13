@@ -51,6 +51,14 @@ const HeroSection = () => {
 
   const imgUrl = getServiceImage(service.category?.name);
 
+  const handleBook = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    navigate(`/services/${id}/book`);
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Button
@@ -149,7 +157,11 @@ const HeroSection = () => {
               </p>
             </div>
 
-            <Button className="w-full mb-4 gap-2" size="xl">
+            <Button
+              className="w-full mb-4 gap-2"
+              size="xl"
+              onClick={handleBook}
+            >
               <Calendar className="size-4" />
               Book Now
               <ArrowRight className="size-3.5" />
