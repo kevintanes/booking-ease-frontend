@@ -1,17 +1,12 @@
 import ServiceCard from "@/components/ServiceCard";
 import { Button } from "@/components/ui/button";
+import { getAllCategories } from "@/services/categoryService";
 import { getAllService } from "@/services/serviceService";
+import type { Category } from "@/types/category";
 import type { Service } from "@/types/service";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const CATEGORIES = [
-  { emoji: "🏓", label: "Sports" },
-  { emoji: "💇", label: "Beauty" },
-  { emoji: "💆", label: "Wellness" },
-  { emoji: "🏋️‍♂️", label: "Fitness" },
-];
 
 const ServicesSection = () => {
   const { data, isLoading, isError } = useQuery({
@@ -19,22 +14,28 @@ const ServicesSection = () => {
     queryFn: () => getAllService({ limit: 4 }),
   });
 
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getAllCategories(),
+  });
+
   const services = data?.data?.services || [];
+  const categories: Category[] = categoryData?.data || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
       <div className="flex justify-center gap-3 flex-wrap">
-        {CATEGORIES.map(({ emoji, label }) => (
+        {categories.map(({ id, icon, name }) => (
           <Button
-            key={label}
+            key={id}
             variant="secondary"
             size="xl"
             className="gap-2 border-surface-200 hover:border-brand-300 hover:bg-brand-50"
             nativeButton={false}
-            render={<Link to={`/services?category=${label}`} />}
+            render={<Link to={`/services?categoryId=${id}`} />}
           >
-            <span className="text-lg">{emoji}</span>
-            {label}
+            <span className="text-lg">{icon}</span>
+            {name}
           </Button>
         ))}
         <Button

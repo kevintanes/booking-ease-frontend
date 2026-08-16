@@ -9,3 +9,8 @@ export const getAllService = async (params: {
   const result = await api.get(`/services/`, { params });
   return result.data;
 };
+
+export const getServiceById = async (id: string) => {
+  const result = await api.get(`/services/${id}`);
+  return result.data;
+};
