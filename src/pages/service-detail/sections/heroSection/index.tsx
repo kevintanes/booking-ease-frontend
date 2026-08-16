@@ -27,7 +27,7 @@ const HeroSection = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["service", id],
-    queryFn: () => getServiceById(id),
+    queryFn: () => getServiceById(id as string),
     enabled: Boolean(id),
   });
 

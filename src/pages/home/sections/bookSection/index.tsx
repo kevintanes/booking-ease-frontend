@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/authContext";
+import { Link } from "react-router-dom";
 
 const BookSection = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="bg-linear-to-r from-brand-700 to-brand-600 rounded-3xl p-8 sm:p-12 text-white text-center">
@@ -12,14 +16,24 @@ const BookSection = () => {
           through BookEase.
         </p>
         <div className="flex justify-center gap-3 flex-wrap">
+          {!isAuthenticated && (
+            <Button
+              variant="secondary"
+              size="xl"
+              className="text-base text-brand-700 active:scale-95"
+              render={<Link to="/register" />}
+              nativeButton={false}
+            >
+              Create free account
+            </Button>
+          )}
           <Button
-            variant="secondary"
+            variant="outline"
             size="xl"
-            className="text-base text-brand-700 active:scale-95"
+            className="text-base"
+            render={<Link to="/services" />}
+            nativeButton={false}
           >
-            Create free account
-          </Button>
-          <Button variant="outline" size="xl" className="text-base">
             Browse services
           </Button>
         </div>

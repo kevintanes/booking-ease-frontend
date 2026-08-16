@@ -1,4 +1,4 @@
-export const SERVICE_IMAGES = {
+export const SERVICE_IMAGES: Record<string, string> = {
   Sports:
     "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80",
   Beauty:
