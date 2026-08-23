@@ -9,6 +9,7 @@ import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "./components/ui/toast";
 import ServiceDetailPage from "./pages/service-detail";
 import ScrollToTop from "./components/ScrollToTop";
+import BookPage from "./pages/book";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/services/:id" element={<ServiceDetailPage />} />
+            <Route path="/services/:id/book" element={<BookPage />} />
             <Route path="*" element={<NotfoundPage />} />
           </Routes>
         </AuthProvider>
