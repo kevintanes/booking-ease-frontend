@@ -10,6 +10,7 @@ import type { TimeSlot } from "@/types/timeSlot";
 import { useQuery } from "@tanstack/react-query";
 import { addMonths, format, subMonths } from "date-fns";
 import {
+  AlertCircle,
   ArrowLeft,
   Calendar as CalendarICon,
   ChevronLeft,
@@ -23,6 +24,7 @@ const HeroSection = () => {
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+
   const [calMonth, setCalMonth] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
 
@@ -82,7 +84,7 @@ const HeroSection = () => {
       </p>
 
       <div className="grid lg:grid-cols-5 gap-6">
-        <div className="lg: col-span-3 space-y-5">
+        <div className="lg:col-span-3 space-y-5">
           <Card className="p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-surface-900 flex items-center gap-2">
@@ -191,6 +193,71 @@ const HeroSection = () => {
               />
             </Card>
           )}
+        </div>
+
+        <div className="lg:col-span-2">
+          <Card className="p-6 sticky top-24">
+            <h2 className="font-semibold text-surface-900 mb-4">
+              Booking Summary
+            </h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between text-surface-800">
+                <span>Service</span>
+                <span className="font-medium text-surface-800 text-right max-w-32 truncate">
+                  {service.name}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-surface-800">
+                <span>Duration</span>
+                <span className="font-medium text-surface-800">
+                  {service?.duration} min
+                </span>
+              </div>
+
+              {selectedDate && (
+                <div className="flex justify-between text-surface-800">
+                  <span>Date</span>
+                  <span className="font-medium text-surface-800">
+                    {format(selectedDate, "MMM d, yyyy")}
+                  </span>
+                </div>
+              )}
+
+              {selectedSlot && (
+                <div className="flex justify-between text-surface-800">
+                  <span>Time</span>
+                  <span className="font-medium text-surface-800">
+                    {`${selectedSlot.startTime} - ${selectedSlot.endTime}`}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between border-t border-surface-100 pt-3 font-semibold text-surface-900">
+                <span>Total</span>
+                <span className="text-brand-700 text-base">
+                  {formatCurrency(service.price)}
+                </span>
+              </div>
+
+              {!selectedDate || !selectedSlot ? (
+                <div className="mt-4 flex items-start gap-2 text-xs text-surface-400 bg-surface-50 rounded-xl p-3">
+                  <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
+                  Please select a date and time to continue.
+                </div>
+              ) : (
+                <Button
+                  // onClick={handleBook}
+                  // disabled={bookMutation.isPending}
+                  className="w-full text-base"
+                  size="xl"
+                >
+                  {/* {bookMutation.isPending ? "Processing..." : "Confirm & Pay"} */}
+                  Confirm & Pay
+                </Button>
+              )}
+            </div>
+          </Card>
         </div>
       </div>
     </div>
