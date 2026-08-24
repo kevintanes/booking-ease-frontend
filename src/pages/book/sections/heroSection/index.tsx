@@ -3,24 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
 import { formatCurrency } from "@/lib/formatCurrency";
+import { getErrorMessage } from "@/lib/handleApiError";
+import { createBooking } from "@/services/bookingService";
 import { getServiceById, getSlots } from "@/services/serviceService";
 import type { Service } from "@/types/service";
 import type { TimeSlot } from "@/types/timeSlot";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addMonths, format, subMonths } from "date-fns";
 import {
   AlertCircle,
   ArrowLeft,
-  Calendar as CalendarICon,
+  Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const HeroSection = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
@@ -36,18 +41,49 @@ const HeroSection = () => {
 
   const service: Service | undefined = data?.data;
 
+  const formattedDate = selectedDate
+    ? format(selectedDate, "yyyy-MM-dd")
+    : null;
+
   const { data: slotsData, isLoading: isSlotsLoading } = useQuery({
-    queryKey: [
-      "slots",
-      id,
-      selectedDate ? format(selectedDate, "yyyy-MM-dd") : null,
-    ],
-    queryFn: () =>
-      getSlots(id as string, format(selectedDate as Date, "yyyy-MM-dd")),
-    enabled: Boolean(id) && Boolean(selectedDate),
+    queryKey: ["slots", id, formattedDate],
+    queryFn: () => getSlots(id as string, formattedDate!),
+    enabled: Boolean(id) && Boolean(formattedDate),
   });
 
   const slots: TimeSlot[] = slotsData?.data || [];
+
+  const bookMutation = useMutation({
+    mutationFn: createBooking,
+    onSuccess: (res) => {
+      toast.add({
+        type: "success",
+        description: "Booking Created!",
+      });
+      navigate(`/booking/${res.data.id}`);
+      queryClient.invalidateQueries({ queryKey: ["slots", id] });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(
+          error,
+          "Booking failed. Please try again.",
+        ),
+      });
+    },
+  });
+
+  const handleBook = () => {
+    if (!id || !selectedDate || !selectedSlot) return;
+
+    bookMutation.mutate({
+      serviceId: id,
+      timeSlotId: selectedSlot.id,
+      bookingDate: format(selectedDate, "yyyy-MM-dd"),
+      notes: notes.trim() || undefined,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -76,9 +112,9 @@ const HeroSection = () => {
         <ArrowLeft className="size-3.5" /> Back to service
       </Button>
 
-      <h1 className="text-2xl font-bold text-surface-900 mb-1">
+      <h2 className="text-2xl font-bold text-surface-900 mb-1">
         {service?.name}
-      </h1>
+      </h2>
       <p className="text-surface-800 text-sm mb-8">
         {formatCurrency(service?.price)} - {service?.duration} minutes
       </p>
@@ -88,7 +124,7 @@ const HeroSection = () => {
           <Card className="p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-surface-900 flex items-center gap-2">
-                <CalendarICon className="size-4 text-brand-600" /> Select a Date
+                <CalendarIcon className="size-4 text-brand-600" /> Select a Date
               </h2>
 
               <div className="flex items-center gap-1">
@@ -139,9 +175,9 @@ const HeroSection = () => {
 
           {selectedDate && (
             <Card className="p-5">
-              <h1 className="font-semibold text-surface-900 mb-2">
-                Available Times - Wed, Aug 26
-              </h1>
+              <h2 className="font-semibold text-surface-900 mb-2">
+                Available Times - {format(selectedDate, "EEE, MMM d")}
+              </h2>
               {isSlotsLoading ? (
                 <div className="text-center py-6 text-surface-400 text-sm">
                   Loading times...
@@ -211,7 +247,7 @@ const HeroSection = () => {
               <div className="flex justify-between text-surface-800">
                 <span>Duration</span>
                 <span className="font-medium text-surface-800">
-                  {service?.duration} min
+                  {service.duration} min
                 </span>
               </div>
 
@@ -247,13 +283,12 @@ const HeroSection = () => {
                 </div>
               ) : (
                 <Button
-                  // onClick={handleBook}
-                  // disabled={bookMutation.isPending}
+                  onClick={handleBook}
+                  disabled={bookMutation.isPending}
                   className="w-full text-base"
                   size="xl"
                 >
-                  {/* {bookMutation.isPending ? "Processing..." : "Confirm & Pay"} */}
-                  Confirm & Pay
+                  {bookMutation.isPending ? "Processing..." : "Confirm & Pay"}
                 </Button>
               )}
             </div>

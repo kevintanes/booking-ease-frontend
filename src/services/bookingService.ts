@@ -1,6 +1,7 @@
 import api from "@/config/api";
+import type { CreateBookingPayload } from "@/types/booking";
 
-export const createBooking = async (booking) => {
+export const createBooking = async (booking: CreateBookingPayload) => {
   const result = await api.post(`/bookings`, booking);
   return result.data;
 };
