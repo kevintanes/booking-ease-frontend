@@ -1,0 +1,302 @@
+import Card from "@/components/Card";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { getErrorMessage } from "@/lib/handleApiError";
+import { createBooking } from "@/services/bookingService";
+import { getServiceById, getSlots } from "@/services/serviceService";
+import type { Service } from "@/types/service";
+import type { TimeSlot } from "@/types/timeSlot";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addMonths, format, subMonths } from "date-fns";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+const HeroSection = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+
+  const [calMonth, setCalMonth] = useState<Date>(new Date());
+  const [notes, setNotes] = useState("");
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["service", id],
+    queryFn: () => getServiceById(id as string),
+    enabled: Boolean(id),
+  });
+
+  const service: Service | undefined = data?.data;
+
+  const formattedDate = selectedDate
+    ? format(selectedDate, "yyyy-MM-dd")
+    : null;
+
+  const { data: slotsData, isLoading: isSlotsLoading } = useQuery({
+    queryKey: ["slots", id, formattedDate],
+    queryFn: () => getSlots(id as string, formattedDate!),
+    enabled: Boolean(id) && Boolean(formattedDate),
+  });
+
+  const slots: TimeSlot[] = slotsData?.data || [];
+
+  const bookMutation = useMutation({
+    mutationFn: createBooking,
+    onSuccess: (res) => {
+      toast.add({
+        type: "success",
+        description: "Booking Created!",
+      });
+      navigate(`/booking/${res.data.id}`);
+      queryClient.invalidateQueries({ queryKey: ["slots", id] });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(
+          error,
+          "Booking failed. Please try again.",
+        ),
+      });
+    },
+  });
+
+  const handleBook = () => {
+    if (!id || !selectedDate || !selectedSlot) return;
+
+    bookMutation.mutate({
+      serviceId: id,
+      timeSlotId: selectedSlot.id,
+      bookingDate: format(selectedDate, "yyyy-MM-dd"),
+      notes: notes.trim() || undefined,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-32">
+        <p className="text-surface-800">Loading...</p>
+      </div>
+    );
+  }
+
+  if (isError || !service) {
+    return (
+      <div className="text-center py-32">
+        <p className="text-surface-800">Service not found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Button
+        variant="ghost"
+        render={<Link to={`/services/${id}`} />}
+        nativeButton={false}
+        className="gap-2 h-fit font-medium text-surface-900 hover:text-surface-800 mb-6"
+      >
+        <ArrowLeft className="size-3.5" /> Back to service
+      </Button>
+
+      <h2 className="text-2xl font-bold text-surface-900 mb-1">
+        {service?.name}
+      </h2>
+      <p className="text-surface-800 text-sm mb-8">
+        {formatCurrency(service?.price)} - {service?.duration} minutes
+      </p>
+
+      <div className="grid lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 space-y-5">
+          <Card className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-surface-900 flex items-center gap-2">
+                <CalendarIcon className="size-4 text-brand-600" /> Select a Date
+              </h2>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setCalMonth((prev) => subMonths(prev, 1))}
+                  className="p-1.5 rounded-lg hover:bg-surface-100 transition-colors text-surface-900 hover:text-surface-900"
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                <span className="text-sm font-semibold text-surface-800 w-32 text-center">
+                  {format(calMonth, "MMMM yyyy")}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setCalMonth((prev) => addMonths(prev, 1))}
+                  className="p-1.5 rounded-lg hover:bg-surface-100 transition-colors text-surface-900 hover:text-surface-900"
+                >
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+            </div>
+
+            <Calendar
+              mode="single"
+              month={calMonth}
+              onMonthChange={setCalMonth}
+              selected={selectedDate}
+              onSelect={(date) => {
+                setSelectedDate(date);
+                setSelectedSlot(null);
+              }}
+              disabled={{ before: new Date() }}
+              showOutsideDays={false}
+              className="w-full"
+              classNames={{
+                nav: "hidden",
+                month_caption: "hidden",
+                today: "",
+                disabled: "cursor-not-allowed",
+                day_button:
+                  "hover:bg-brand-50 text-surface-800 hover:text-brand-700 cursor-pointer",
+              }}
+            />
+          </Card>
+
+          {selectedDate && (
+            <Card className="p-5">
+              <h2 className="font-semibold text-surface-900 mb-2">
+                Available Times - {format(selectedDate, "EEE, MMM d")}
+              </h2>
+              {isSlotsLoading ? (
+                <div className="text-center py-6 text-surface-400 text-sm">
+                  Loading times...
+                </div>
+              ) : slots.length === 0 ? (
+                <div className="text-center py-6 text-surface-400 text-sm">
+                  No time slots available for this date.
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {slots.map((slot) => (
+                    <Button
+                      key={slot.id}
+                      disabled={!slot.available}
+                      onClick={() => setSelectedSlot(slot)}
+                      variant="secondary"
+                      size="lg"
+                      className={`font-medium rounded-lg shadow-none cursor-pointer 
+                      ${
+                        !slot.available
+                          ? "cursor-not-allowed line-through"
+                          : selectedSlot?.id === slot.id
+                            ? "border-brand-600 bg-brand-600 text-white shadow-sm hover:bg-brand-600 hover:text-white"
+                            : "hover:border-brand-400 hover:text-brand-700 hover:bg-white"
+                      } `}
+                    >
+                      {slot.startTime}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
+
+          {selectedSlot && (
+            <Card className="p-5">
+              <FieldLabel
+                htmlFor="notes"
+                className="font-semibold text-surface-900 mb-2"
+              >
+                Special requests (optional)
+              </FieldLabel>
+              <Textarea
+                id="notes"
+                placeholder="Special requests (optional)"
+                className="resize-none"
+                onChange={(e) => setNotes(e.target.value)}
+                value={notes}
+              />
+            </Card>
+          )}
+        </div>
+
+        <div className="lg:col-span-2">
+          <Card className="p-6 sticky top-24">
+            <h2 className="font-semibold text-surface-900 mb-4">
+              Booking Summary
+            </h2>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between text-surface-800">
+                <span>Service</span>
+                <span className="font-medium text-surface-800 text-right max-w-32 truncate">
+                  {service.name}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-surface-800">
+                <span>Duration</span>
+                <span className="font-medium text-surface-800">
+                  {service.duration} min
+                </span>
+              </div>
+
+              {selectedDate && (
+                <div className="flex justify-between text-surface-800">
+                  <span>Date</span>
+                  <span className="font-medium text-surface-800">
+                    {format(selectedDate, "MMM d, yyyy")}
+                  </span>
+                </div>
+              )}
+
+              {selectedSlot && (
+                <div className="flex justify-between text-surface-800">
+                  <span>Time</span>
+                  <span className="font-medium text-surface-800">
+                    {`${selectedSlot.startTime} - ${selectedSlot.endTime}`}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between border-t border-surface-100 pt-3 font-semibold text-surface-900">
+                <span>Total</span>
+                <span className="text-brand-700 text-base">
+                  {formatCurrency(service.price)}
+                </span>
+              </div>
+
+              {!selectedDate || !selectedSlot ? (
+                <div className="mt-4 flex items-start gap-2 text-xs text-surface-400 bg-surface-50 rounded-xl p-3">
+                  <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
+                  Please select a date and time to continue.
+                </div>
+              ) : (
+                <Button
+                  onClick={handleBook}
+                  disabled={bookMutation.isPending}
+                  className="w-full text-base"
+                  size="xl"
+                >
+                  {bookMutation.isPending ? "Processing..." : "Confirm & Pay"}
+                </Button>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HeroSection;
