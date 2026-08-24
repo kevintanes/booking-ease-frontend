@@ -1,5 +1,7 @@
 import type { Booking } from "./booking";
 
+export type PaymentStatus = "UNPAID" | "PAID" | "EXPIRED" | "FAILED";
+
 export interface Payment {
   id: string;
   bookingId: string;
@@ -8,7 +10,7 @@ export interface Payment {
   xenditInvoiceId: string;
   xenditPaymentUrl: string;
   amount: number;
-  status: "UNPAID" | "PAID" | "EXPIRED" | "FAILED";
+  status: PaymentStatus;
   paymentMethod: string;
   paidAt: Date;
   expiredAt: Date;

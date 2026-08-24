@@ -19,28 +19,34 @@ import {
 import { Link, useParams } from "react-router-dom";
 
 const statusIcon = {
-  CONFIRMED: <CheckCircle size={20} className="text-green-500" />,
-  CANCELLED: <XCircle size={20} className="text-red-500" />,
-  COMPLETED: <CheckCircle size={20} className="text-surface-400" />,
-  WAITING_PAYMENT: <AlertCircle size={20} className="text-yellow-500" />,
-  PENDING: <Clock size={20} className="text-blue-500" />,
+  CONFIRMED: <CheckCircle className="text-green-500 size-5" />,
+  CANCELLED: <XCircle className="text-red-500 size-5" />,
+  COMPLETED: <CheckCircle className="text-surface-400 size-5" />,
+  WAITING_PAYMENT: <AlertCircle className="text-yellow-500 size-5" />,
+  PENDING: <Clock className="text-blue-500 size-5" />,
 };
 
 const BookingDetailPage = () => {
   const { id } = useParams();
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["booking", id],
     queryFn: () => getBookingById(id as string),
   });
 
-  console.log({ data });
-
   const booking: Booking | undefined = data?.data;
 
-  if (!booking) {
+  if (isLoading) {
     return (
-      <div className="mih-h-screen bg-surface-50">
+      <div className="text-center py-32">
+        <p className="text-surface-800">Loading...</p>
+      </div>
+    );
+  }
+
+  if (isError || !booking) {
+    return (
+      <div className="min-h-screen bg-surface-50">
         <div className="text-center py-32 text-surface-800">
           Booking not found.
         </div>
@@ -127,7 +133,7 @@ const BookingDetailPage = () => {
               <div>
                 <p className="text-surface-400 text-xs mb-0.5">Date</p>
                 <p className="font-medium text-surface-800">
-                  {format(new Date(booking.bookingDate), "EEEE, MMM d, yyyy")}
+                  {format(new Date(booking.bookingDate), "EEE, MMM d, yyyy")}
                 </p>
               </div>
               <div>
@@ -143,7 +149,7 @@ const BookingDetailPage = () => {
                 </p>
               </div>
               <div>
-                <p className="text-surface-400 text-xs mb-0.5">Duration</p>
+                <p className="text-surface-400 text-xs mb-0.5">Location</p>
                 <p className="font-medium text-surface-800">
                   {booking.service.location || "-"}
                 </p>
@@ -172,7 +178,7 @@ const BookingDetailPage = () => {
               <h2 className="font-semibold text-surface-900 mb-4">Payment</h2>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <CreditCard size={16} className="text-surface-400" />
+                  <CreditCard className="text-surface-400 size-4" />
                   <span className="text-sm text-surface-800">
                     {booking.payment.paymentMethod || "Online Payment"}
                   </span>
@@ -187,7 +193,7 @@ const BookingDetailPage = () => {
                     rel="noreferrer"
                     className="mt-4 flex items-center justify-center gap-2 btn-primary w-full py-2.5 text-sm"
                   >
-                    <ExternalLink size={14} /> Open Payment Page
+                    <ExternalLink className="size-3.5" /> Open Payment Page
                   </a>
                 )}
             </Card>
