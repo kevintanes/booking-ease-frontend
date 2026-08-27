@@ -1,40 +1,88 @@
-import Card from "@/components/Card";
 import SEO from "@/components/SEO";
-import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/formatCurrency";
-import { getBookingById } from "@/services/bookingService";
+import { toast } from "@/components/ui/toast";
+import { getErrorMessage } from "@/lib/handleApiError";
+import { cancelBooking, getBookingById } from "@/services/bookingService";
+import { createPayment } from "@/services/paymentService";
 import type { Booking } from "@/types/booking";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import {
-  AlertCircle,
-  ArrowLeft,
-  CheckCircle,
-  Clock,
-  CreditCard,
-  ExternalLink,
-  XCircle,
-} from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-
-const statusIcon = {
-  CONFIRMED: <CheckCircle className="text-green-500 size-5" />,
-  CANCELLED: <XCircle className="text-red-500 size-5" />,
-  COMPLETED: <CheckCircle className="text-surface-400 size-5" />,
-  WAITING_PAYMENT: <AlertCircle className="text-yellow-500 size-5" />,
-  PENDING: <Clock className="text-blue-500 size-5" />,
-};
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import BookingActions from "./components/BookingActions";
+import BookingInfoCard from "./components/BookingInfoCard";
+import BookingPaymentCard from "./components/BookingPaymentCard";
+import BookingStatusBanner from "./components/BookingStatusBanner";
 
 const BookingDetailPage = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["booking", id],
     queryFn: () => getBookingById(id as string),
   });
 
   const booking: Booking | undefined = data?.data;
+
+  useEffect(() => {
+    const result = searchParams.get("payment");
+    if (result === "success") {
+      toast.add({
+        type: "success",
+        description: "Payment confirmed! Your booking is confirmed!",
+      });
+      refetch();
+    } else if (result === "failed") {
+      toast.add({
+        type: "error",
+        description: "Payment failed! Please try again later.",
+      });
+    }
+  }, []);
+
+  const payMutation = useMutation({
+    mutationFn: () => createPayment(id as string),
+    onSuccess: (res) => {
+      const url = res.data.xenditPaymentUrl;
+      if (url) {
+        window.open(url, "_blank");
+      } else {
+        toast.add({
+          type: "error",
+          description: "Payment URl not available",
+        });
+        queryClient.invalidateQueries({ queryKey: ["booking", id] });
+      }
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(
+          error,
+          "Payment failed. Please try again.",
+        ),
+      });
+    },
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: () => cancelBooking(id as string),
+    onSuccess: () => {
+      toast.add({
+        type: "success",
+        description: "Booking cancelled",
+      });
+      queryClient.invalidateQueries({ queryKey: ["booking", id] });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        description: getErrorMessage(error, "Cancel failed. Please try again."),
+      });
+    },
+  });
 
   if (isLoading) {
     return (
@@ -54,6 +102,9 @@ const BookingDetailPage = () => {
     );
   }
 
+  const canPay = booking?.status === "WAITING_PAYMENT";
+  const canCancel = !["COMPLETED", "CANCELLED"].includes(booking.status);
+
   return (
     <>
       <SEO title="Booking Detail" description="Booking Detail" />
@@ -68,149 +119,17 @@ const BookingDetailPage = () => {
             <ArrowLeft className="size-3.5" /> Back to dashboard
           </Button>
 
-          <Card
-            className={`p-5 mb-5 flex items-center gap-3 ${
-              booking.status === "CONFIRMED"
-                ? "bg-green-50 border-green-200"
-                : booking.status === "CANCELLED"
-                  ? "bg-red-50 border-red-200"
-                  : booking.status === "WAITING_PAYMENT"
-                    ? "bg-yellow-50 border-yellow-200"
-                    : "bg-blue-50 border-blue-200"
-            }`}
-          >
-            {statusIcon[booking.status]}
-
-            <div>
-              <p className="font-semibold text-surface-900">
-                {booking.status === "WAITING_PAYMENT" && "Payment Required"}
-                {booking.status === "PENDING" && "Awaiting Confirmation"}
-                {booking.status === "CONFIRMED" && "Booking Confirmed!"}
-                {booking.status === "COMPLETED" && "Session Completed"}
-                {booking.status === "CANCELLED" && "Booking Cancelled"}
-              </p>
-              <p className="text-sm text-surface-800">
-                {booking.status === "WAITING_PAYMENT" &&
-                  "Complete your payment to confirm the booking."}
-                {booking.status === "PENDING" &&
-                  "Your payment is being processed."}
-                {booking.status === "CONFIRMED" &&
-                  "Your booking has been confirmed. See you soon!"}
-                {booking.status === "COMPLETED" &&
-                  "Thank you for using our service."}
-                {booking.status === "CANCELLED" &&
-                  "This booking has been cancelled"}
-              </p>
-            </div>
-            <div className="ml-auto">
-              <StatusBadge status={booking.status} />
-            </div>
-          </Card>
-
-          <Card className="p-6 mb-5">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="font-semibold text-surface-900">
-                Booking Details
-              </h2>
-              <span className="text-xs text-surface-400 font-mono ">
-                #{booking.id.slice(-8).toUpperCase()}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-y-4 text-sm">
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Service</p>
-                <p className="font-medium text-surface-800">
-                  {booking.service.name}
-                </p>
-              </div>
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Category</p>
-                <p className="font-medium text-surface-800">
-                  {booking.service.category?.icon}{" "}
-                  {booking.service.category?.name}
-                </p>
-              </div>
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Date</p>
-                <p className="font-medium text-surface-800">
-                  {format(new Date(booking.bookingDate), "EEE, MMM d, yyyy")}
-                </p>
-              </div>
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Time</p>
-                <p className="font-medium text-surface-800">
-                  {booking.timeSlot.startTime} - {booking.timeSlot.endTime}
-                </p>
-              </div>
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Duration</p>
-                <p className="font-medium text-surface-800">
-                  {booking.service.duration}
-                </p>
-              </div>
-              <div>
-                <p className="text-surface-400 text-xs mb-0.5">Location</p>
-                <p className="font-medium text-surface-800">
-                  {booking.service.location || "-"}
-                </p>
-              </div>
-              {booking.notes && (
-                <div>
-                  <p className="text-surface-400 text-xs mb-0.5">Notes</p>
-                  <p className="font-medium text-surface-800">
-                    {booking.notes}
-                  </p>
-                </div>
-              )}
-              <div className="col-span-2 border-t border-surface-100 pt-4 flex justify-between">
-                <span className="font-semibold text-surface-900">
-                  Total Amount
-                </span>
-                <span className="font-bold text-brand-700 text-base">
-                  {formatCurrency(booking.totalAmount)}
-                </span>
-              </div>
-            </div>
-          </Card>
-
-          {booking.payment && (
-            <Card className="p-6 mb-5">
-              <h2 className="font-semibold text-surface-900 mb-4">Payment</h2>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="text-surface-400 size-4" />
-                  <span className="text-sm text-surface-800">
-                    {booking.payment.paymentMethod || "Online Payment"}
-                  </span>
-                </div>
-                <StatusBadge status={booking.payment.status} />
-              </div>
-              {booking.payment.xenditPaymentUrl &&
-                booking.payment.status === "UNPAID" && (
-                  <a
-                    href={booking.payment.xenditPaymentUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-4 flex items-center justify-center gap-2 btn-primary w-full py-2.5 text-sm"
-                  >
-                    <ExternalLink className="size-3.5" /> Open Payment Page
-                  </a>
-                )}
-            </Card>
-          )}
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button size="xl" className=" gap-2 flex-1">
-              <CreditCard className="size-4" /> Pay Now
-            </Button>
-            <Button
-              variant="secondary"
-              size="xl"
-              className="gap-2 flex-1 sm:flex-none text-red-600 border-red-200 hover:bg-red-50"
-            >
-              <XCircle className="size-4" /> Cancel Booking
-            </Button>
-          </div>
+          <BookingStatusBanner status={booking.status} />
+          <BookingInfoCard booking={booking} />
+          <BookingPaymentCard payment={booking.payment} />
+          <BookingActions
+            canPay={canPay}
+            canCancel={canCancel}
+            onPay={() => payMutation.mutate()}
+            onCancel={() => cancelMutation.mutate()}
+            isPaying={payMutation.isPending}
+            isCancelling={cancelMutation.isPending}
+          />
         </div>
       </div>
     </>
