@@ -11,6 +11,7 @@ import ServiceDetailPage from "./pages/service-detail";
 import ScrollToTop from "./components/ScrollToTop";
 import BookPage from "./pages/book";
 import BookingDetailPage from "./pages/booking-detail";
+import DashboardPage from "./pages/dashboard";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/services/:id" element={<ServiceDetailPage />} />
             <Route path="/services/:id/book" element={<BookPage />} />
             <Route path="/booking/:id" element={<BookingDetailPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="*" element={<NotfoundPage />} />
           </Routes>
         </AuthProvider>
