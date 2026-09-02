@@ -14,27 +14,43 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+const getStoredUser = (): User | undefined => {
+  try {
+    const raw = localStorage.getItem("user");
+    return raw ? (JSON.parse(raw) as User) : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | undefined>(undefined);
-  const [token, setToken] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | undefined>(getStoredUser);
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const isAuthenticated = !!token;
   const navigate = useNavigate();
 
-  const register = async (user: RegisterFormValues) => {
+  const persistAuth = (user: User, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
+  const register = async (formValues: RegisterFormValues) => {
     try {
-      const result = await registerUser(user);
+      const result = await registerUser(formValues);
 
       if (result.success === true) {
-        setUser(result.data.user);
-        setToken(result.data.token);
-        setIsAuthenticated(true);
-        toast.add({
-          type: "success",
-          description: "User created",
-        });
-        localStorage.setItem("token", result.data.token);
+        persistAuth(result.data.user, result.data.token);
+        toast.add({ type: "success", description: "User created" });
         navigate("/");
+        return;
       }
+
+      toast.add({
+        type: "error",
+        description: "Registration failed. Please try again.",
+      });
     } catch (error) {
       toast.add({
         type: "error",
@@ -51,16 +67,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       const result = await loginUser({ email, password });
 
       if (result.success === true) {
-        setUser(result.data.user);
-        setToken(result.data.token);
-        setIsAuthenticated(true);
-        toast.add({
-          type: "success",
-          description: "Login success",
-        });
-        localStorage.setItem("token", result.data.token);
+        persistAuth(result.data.user, result.data.token);
+        toast.add({ type: "success", description: "Login success" });
         navigate("/");
+        return;
       }
+
+      toast.add({
+        type: "error",
+        description: "Login failed. Please try again.",
+      });
     } catch (error) {
       toast.add({
         type: "error",
@@ -73,7 +89,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(undefined);
     setToken("");
     localStorage.removeItem("token");
-    setIsAuthenticated(false);
+    localStorage.removeItem("user");
     navigate("/login");
   };
 

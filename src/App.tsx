@@ -11,6 +11,9 @@ import ServiceDetailPage from "./pages/service-detail";
 import ScrollToTop from "./components/ScrollToTop";
 import BookPage from "./pages/book";
 import BookingDetailPage from "./pages/booking-detail";
+import DashboardPage from "./pages/dashboard";
+import GuestRoute from "./helper/GuestRoute";
+import ProtectedRoute from "./helper/ProtectedRoute";
 
 function App() {
   return (
@@ -22,12 +25,20 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/services/:id" element={<ServiceDetailPage />} />
-            <Route path="/services/:id/book" element={<BookPage />} />
-            <Route path="/booking/:id" element={<BookingDetailPage />} />
+
+            <Route element={<GuestRoute />}>
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/services/:id/book" element={<BookPage />} />
+              <Route path="/booking/:id" element={<BookingDetailPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Route>
+
             <Route path="*" element={<NotfoundPage />} />
           </Routes>
         </AuthProvider>

@@ -1,13 +1,6 @@
+import PaginationControl from "@/components/PaginationControl";
 import ServiceCard from "@/components/ServiceCard";
 import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { getAllService } from "@/services/serviceService";
 import type { Service } from "@/types/service";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -68,54 +61,12 @@ const ServiceListSection = () => {
         </div>
       )}
 
-      {pagination && pagination.totalPage > 1 && (
-        <Pagination className="mt-10">
-          <PaginationContent className="gap-2">
-            <PaginationItem>
-              <PaginationPrevious
-                text="Prev"
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (page > 1) goToPage(page - 1);
-                }}
-                aria-disabled={page === 1}
-                className={page === 1 ? "pointer-events-none opacity-40" : ""}
-              />
-            </PaginationItem>
-
-            {[...Array(pagination.totalPage)].map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === i + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToPage(i + 1);
-                  }}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (page < pagination.totalPage) goToPage(page + 1);
-                }}
-                aria-disabled={page === pagination.totalPage}
-                className={
-                  page === pagination.totalPage
-                    ? "pointer-events-none opacity-40"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      {pagination && (
+        <PaginationControl
+          page={page}
+          totalPage={pagination.totalPage}
+          onPageChange={goToPage}
+        />
       )}
     </div>
   );
