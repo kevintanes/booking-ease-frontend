@@ -1,6 +1,7 @@
 import type { Payment } from "./payment";
 import type { Service } from "./service";
 import type { TimeSlot } from "./timeSlot";
+import type { User } from "./user";
 
 export type BookingStatus =
   | "WAITING_PAYMENT"
@@ -25,7 +26,19 @@ export interface Booking {
   status: BookingStatus;
   notes: string | null;
   totalAmount: number;
+  createdAt: Date;
   payment: Payment;
   service: Service;
   timeSlot: TimeSlot;
+  user: User;
+}
+
+export interface RecentBooking {
+  id: string;
+  bookingDate: Date;
+  createdAt: Date;
+  totalAmount: number;
+  status: BookingStatus;
+  user: Pick<User, "name" | "email">;
+  service: Pick<Service, "name">;
 }
