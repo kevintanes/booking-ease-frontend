@@ -16,6 +16,7 @@ import GuestRoute from "./helper/GuestRoute";
 import ProtectedRoute from "./helper/ProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
 import AdminDashboardPage from "./pages/admin";
+import AdminBookingsPage from "./pages/admin/pages/bookings";
 
 const AppContent = () => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const AppContent = () => {
           <Route path="/admin" element={<ProtectedRoute isAdminOnly={true} />}>
             <Route element={<AdminLayout />}>
               <Route index element={<AdminDashboardPage />} />
+              <Route path="bookings" element={<AdminBookingsPage />} />
             </Route>
           </Route>
 
