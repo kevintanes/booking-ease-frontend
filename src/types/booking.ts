@@ -42,3 +42,30 @@ export interface RecentBooking {
   user: Pick<User, "name" | "email">;
   service: Pick<Service, "name">;
 }
+
+export interface AdminBooking {
+  id: string;
+  bookingDate: string;
+  status: BookingStatus;
+  totalAmount: string;
+  createdAt: string;
+  user: { name: string; email: string };
+  service: {
+    name: string;
+    category: { name: string; icon: string };
+  };
+  timeSlot: { startTime: string; endTime: string };
+  payment: { status: string; method: string } | null;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  count: number;
+  totalPage: number;
+}
+
+export interface AdminBookingsResponse {
+  bookings: AdminBooking[];
+  pagination: Pagination;
+}
