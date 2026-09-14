@@ -8,3 +8,9 @@ export interface User {
   googleId: string;
   createdAt: Date;
 }
+
+export interface UserWithBookingCount extends User {
+  _count: {
+    bookings: number;
+  };
+}

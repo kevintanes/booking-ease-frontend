@@ -8,13 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { User } from "@/types/user";
+import type { UserWithBookingCount } from "@/types/user";
 import { format } from "date-fns";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface TableSectionProps {
-  users: User[];
-  pagination: {
+  users: UserWithBookingCount[];
+  pagination?: {
     page: number;
     limit: number;
     count: number;
@@ -30,8 +30,6 @@ const TableSection = ({
   isLoading,
   onPageChange,
 }: TableSectionProps) => {
-  console.log(users);
-
   return (
     <Card className="overflow-hidden">
       <Table>
@@ -46,7 +44,7 @@ const TableSection = ({
           {isLoading && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={5}
                 className="text-center py-6 text-surface-400"
               >
                 Loading users...
@@ -57,7 +55,7 @@ const TableSection = ({
           {!isLoading && users.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={5}
                 className="text-center py-6 text-surface-400"
               >
                 No users yet.

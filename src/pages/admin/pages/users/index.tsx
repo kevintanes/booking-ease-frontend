@@ -1,10 +1,10 @@
 import SEO from "@/components/SEO";
-import HeaderSection from "./sections/headerSection";
-import TableSection from "./sections/tableSection";
+import { getAllUsers } from "@/services/adminService";
+import type { UserWithBookingCount } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { getAllUsers } from "@/services/adminService";
-import type { User } from "@/types/user";
+import HeaderSection from "./sections/headerSection";
+import TableSection from "./sections/tableSection";
 
 const AdminUsersPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,7 +15,7 @@ const AdminUsersPage = () => {
     queryFn: () => getAllUsers({ page, limit: 10 }),
   });
 
-  const users: User[] = data?.data?.users || [];
+  const users: UserWithBookingCount[] = data?.data?.users || [];
   const pagination = data?.data?.pagination;
 
   const handlePageChange = (nextPage: number) => {
