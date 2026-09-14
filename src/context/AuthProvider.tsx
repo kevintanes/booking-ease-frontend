@@ -93,9 +93,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     navigate("/login");
   };
 
+  const setAuth = (user: User, token: string) => {
+    setUser(user);
+    setToken(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
+
   return (
     <AuthContext.Provider
-      value={{ register, token, user, login, isAuthenticated, logout }}
+      value={{ register, token, user, login, isAuthenticated, logout, setAuth }}
     >
       {children}
     </AuthContext.Provider>

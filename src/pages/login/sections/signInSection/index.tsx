@@ -44,6 +44,10 @@ const SignInSection = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_BASE_URL}/api/auth/google`;
+  };
+
   return (
     <section className="flex-1 p-6 sm:p-12 flex flex-col justify-center items-center">
       <div className="w-full max-w-md">
@@ -73,6 +77,7 @@ const SignInSection = () => {
         </div>
 
         <Button
+          onClick={handleGoogleLogin}
           variant="outline"
           className="w-full border-surface-200 text-surface-800 gap-3 py-3 px-4 hover:bg-surface-50 rounded-lg mb-6"
           size="xl"

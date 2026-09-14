@@ -19,6 +19,7 @@ import RegisterPage from "./pages/register";
 import ServiceDetailPage from "./pages/service-detail";
 import ServicesPage from "./pages/services";
 import AdminUsersPage from "./pages/admin/pages/users";
+import AuthCallbackPage from "./pages/auth-callback";
 
 const AppContent = () => {
   const location = useLocation();
@@ -38,6 +39,7 @@ const AppContent = () => {
           <Route element={<GuestRoute />}>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>

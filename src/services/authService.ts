@@ -13,3 +13,8 @@ export const loginUser = async ({ email, password }: LoginFormValues) => {
   const result = await api.post(`/auth/login`, { email, password });
   return result.data;
 };
+
+export const getMe = async () => {
+  const result = await api.get("/auth/me");
+  return result.data;
+};
