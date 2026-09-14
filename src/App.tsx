@@ -1,22 +1,23 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import HomePage from "./pages/home";
-import RegisterPage from "./pages/register";
-import NotfoundPage from "./pages/not-found";
-import LoginPage from "./pages/login";
-import ServicesPage from "./pages/services";
+import AdminLayout from "./components/AdminLayout";
 import Navbar from "./components/Navbar";
-import AuthProvider from "./context/AuthProvider";
-import { Toaster } from "./components/ui/toast";
-import ServiceDetailPage from "./pages/service-detail";
 import ScrollToTop from "./components/ScrollToTop";
+import { Toaster } from "./components/ui/toast";
+import AuthProvider from "./context/AuthProvider";
+import GuestRoute from "./helper/GuestRoute";
+import ProtectedRoute from "./helper/ProtectedRoute";
+import AdminDashboardPage from "./pages/admin";
+import AdminBookingsPage from "./pages/admin/pages/bookings";
+import AdminServicesPage from "./pages/admin/pages/services";
 import BookPage from "./pages/book";
 import BookingDetailPage from "./pages/booking-detail";
 import DashboardPage from "./pages/dashboard";
-import GuestRoute from "./helper/GuestRoute";
-import ProtectedRoute from "./helper/ProtectedRoute";
-import AdminLayout from "./components/AdminLayout";
-import AdminDashboardPage from "./pages/admin";
-import AdminBookingsPage from "./pages/admin/pages/bookings";
+import HomePage from "./pages/home";
+import LoginPage from "./pages/login";
+import NotfoundPage from "./pages/not-found";
+import RegisterPage from "./pages/register";
+import ServiceDetailPage from "./pages/service-detail";
+import ServicesPage from "./pages/services";
 
 const AppContent = () => {
   const location = useLocation();
@@ -48,6 +49,7 @@ const AppContent = () => {
             <Route element={<AdminLayout />}>
               <Route index element={<AdminDashboardPage />} />
               <Route path="bookings" element={<AdminBookingsPage />} />
+              <Route path="services" element={<AdminServicesPage />} />
             </Route>
           </Route>
 
