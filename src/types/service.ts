@@ -1,4 +1,5 @@
 import type { Category } from "./category";
+import type { TimeSlot } from "./timeSlot";
 
 export interface Service {
   id: string;
@@ -13,4 +14,5 @@ export interface Service {
   isActive: boolean;
   categoryId: string;
   category: Category;
+  slots: TimeSlot[];
 }
