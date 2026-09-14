@@ -18,6 +18,7 @@ import NotfoundPage from "./pages/not-found";
 import RegisterPage from "./pages/register";
 import ServiceDetailPage from "./pages/service-detail";
 import ServicesPage from "./pages/services";
+import AdminUsersPage from "./pages/admin/pages/users";
 
 const AppContent = () => {
   const location = useLocation();
@@ -50,6 +51,7 @@ const AppContent = () => {
               <Route index element={<AdminDashboardPage />} />
               <Route path="bookings" element={<AdminBookingsPage />} />
               <Route path="services" element={<AdminServicesPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
             </Route>
           </Route>
 

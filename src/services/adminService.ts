@@ -60,3 +60,13 @@ export const deleteService = async (id: string) => {
   const result = await api.delete(`/admin/services/${id}`);
   return result.data;
 };
+
+export const getAllUsers = async (params: {
+  limit?: number;
+  page?: number;
+  status?: string;
+  search?: string;
+}) => {
+  const result = await api.get(`/admin/users`, { params });
+  return result.data;
+};

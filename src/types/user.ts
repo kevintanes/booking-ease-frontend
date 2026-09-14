@@ -5,4 +5,6 @@ export interface User {
   role: "USER" | "ADMIN";
   avatar: string | null;
   phone: string | null;
+  googleId: string;
+  createdAt: Date;
 }
