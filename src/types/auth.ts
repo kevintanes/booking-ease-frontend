@@ -11,4 +11,6 @@ export interface AuthContextType {
   login: (data: LoginFormValues) => Promise<void>;
   isAuthenticated: boolean;
   logout: () => void;
+  setAuth: (user: User, token: string) => void;
+  setToken: (token: string) => void;
 }
