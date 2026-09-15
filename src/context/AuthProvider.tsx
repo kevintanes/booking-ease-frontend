@@ -25,14 +25,20 @@ const getStoredUser = (): User | undefined => {
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | undefined>(getStoredUser);
-  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [token, setTokenState] = useState(
+    () => localStorage.getItem("token") || "",
+  );
   const isAuthenticated = !!token;
   const navigate = useNavigate();
 
-  const persistAuth = (user: User, token: string) => {
+  const setToken = (token: string) => {
+    setTokenState(token);
+    localStorage.setItem("token", token);
+  };
+
+  const setAuth = (user: User, token: string) => {
     setUser(user);
     setToken(token);
-    localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
   };
 
@@ -41,7 +47,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       const result = await registerUser(formValues);
 
       if (result.success === true) {
-        persistAuth(result.data.user, result.data.token);
+        setAuth(result.data.user, result.data.token);
         toast.add({ type: "success", description: "User created" });
         navigate("/");
         return;
@@ -67,7 +73,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       const result = await loginUser({ email, password });
 
       if (result.success === true) {
-        persistAuth(result.data.user, result.data.token);
+        setAuth(result.data.user, result.data.token);
         toast.add({ type: "success", description: "Login success" });
         navigate("/");
         return;
@@ -87,22 +93,24 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     setUser(undefined);
-    setToken("");
+    setTokenState("");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  const setAuth = (user: User, token: string) => {
-    setUser(user);
-    setToken(token);
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-  };
-
   return (
     <AuthContext.Provider
-      value={{ register, token, user, login, isAuthenticated, logout, setAuth }}
+      value={{
+        register,
+        token,
+        user,
+        login,
+        isAuthenticated,
+        logout,
+        setAuth,
+        setToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
