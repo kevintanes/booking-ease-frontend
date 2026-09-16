@@ -253,8 +253,6 @@ const ModalService = ({
                     >
                       <SelectValue placeholder="Select category">
                         {(value: string) => {
-                          console.log(258, value);
-
                           const selected = categories.find(
                             (c) => c.id === value,
                           );

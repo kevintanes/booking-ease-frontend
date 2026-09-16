@@ -66,7 +66,7 @@ const ServicesSection = () => {
       </div>
       {isLoading && <p>Loading services...</p>}
       {isError && <p>Failed to load services.</p>}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5  place-items-center mt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-8">
         {services.map((service: Service) => (
           <ServiceCard key={service.id} service={service} />
         ))}

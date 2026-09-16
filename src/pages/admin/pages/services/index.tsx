@@ -1,20 +1,20 @@
 import SEO from "@/components/SEO";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { toast } from "@/components/ui/toast";
 import type { ServiceFormValues } from "@/lib/validations/service";
 import {
   createService,
   deleteService,
+  getAllServices,
   updateService,
   type TimeSlotPayload,
 } from "@/services/adminService";
-import { getAllService } from "@/services/serviceService";
 import type { Service } from "@/types/service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import ModalService from "./components/ModalService";
 import HeaderSection from "./sections/headerSection";
 import TableSection from "./sections/tableSection";
-import ModalService from "./components/ModalService";
-import { useSearchParams } from "react-router-dom";
 
 const AdminServicesPage = () => {
   const queryClient = useQueryClient();
@@ -28,7 +28,7 @@ const AdminServicesPage = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["services-admin", page],
-    queryFn: () => getAllService({ page, limit: 10 }),
+    queryFn: () => getAllServices({ page, limit: 10 }),
   });
 
   const services: Service[] = data?.data?.services || [];
