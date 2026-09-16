@@ -68,3 +68,11 @@ export const getAllUsers = async (params: {
   const result = await api.get(`/admin/users`, { params });
   return result.data;
 };
+
+export const getAllServices = async (params: {
+  limit?: number;
+  page?: number;
+}) => {
+  const result = await api.get(`/admin/services`, { params });
+  return result.data;
+};

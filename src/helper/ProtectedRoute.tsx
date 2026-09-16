@@ -7,7 +7,6 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ isAdminOnly }: ProtectedRouteProps) => {
   const { isAuthenticated, user } = useAuth();
-  console.log({ isAuthenticated });
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
 
