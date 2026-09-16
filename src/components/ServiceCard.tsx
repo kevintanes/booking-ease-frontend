@@ -13,7 +13,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const imgUrl = getServiceImage(service.category?.name);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-surface-100 group overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+    <div className="h-full flex flex-col bg-white rounded-2xl shadow-sm border border-surface-100 group overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
       <div className="relative overflow-hidden">
         <img
           src={imgUrl}
@@ -34,11 +34,11 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           </div>
         )}
       </div>
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-1">
         <h3 className="font-semibold text-surface-900 mb-1 group-hover:text-brand-700 transition-colors line-clamp-1">
           {service.name}
         </h3>
-        <p className="text-sm text-surface-800 line-clamp-2 mb-3 leading-relaxed">
+        <p className="text-sm text-surface-800 line-clamp-2 mb-3 leading-relaxed min-h-11.5">
           {service.description}
         </p>
         <div className="flex items-center gap-3 text-xs text-surface-800 mb-4">
@@ -53,7 +53,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             {service.duration} min
           </span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           <div>
             <span className="text-xs text-surface-400">from</span>
             <p className="text-base font-bold text-brand-700">
